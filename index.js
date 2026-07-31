@@ -15,7 +15,6 @@ const futureSimulatorContent = document.getElementById("future-simulator-content
 const moodAnalyticsCard = document.getElementById("mood-analytics-card");
 const moodAnalyticsContent = document.getElementById("mood-analytics-content");
 
-// Stepper Elements
 const stepViews = {
   1: document.getElementById("step-1-view"),
   2: document.getElementById("step-2-view"),
@@ -42,9 +41,6 @@ const chartColors = [
   "#4BC0C0", "#9966FF", "#FF9F40"
 ];
 
-/* ==========================================================================
-   STEPPER NAVIGATION ENGINE
-   ========================================================================== */
 function switchStep(stepNum) {
   [1, 2, 3].forEach(num => {
     if (stepViews[num]) {
@@ -56,7 +52,6 @@ function switchStep(stepNum) {
   });
 }
 
-// Enable clicking previous step tabs
 Object.keys(stepTabs).forEach(step => {
   stepTabs[step].addEventListener("click", () => {
     const targetStep = parseInt(step);
@@ -66,33 +61,26 @@ Object.keys(stepTabs).forEach(step => {
   });
 });
 
-/* ==========================================================================
-   PART 1: FUTURE-YOU SIMULATOR (INTERNAL JS API)
-   ========================================================================== */
 const FuturePredictorAPI = {
   catalog: [
-    // Micro / Hobby Tier
     { name: "Bestselling Book Collection", price: 1200, icon: "fa-book" },
     { name: "Artist Watercolor & Sketching Set", price: 1800, icon: "fa-palette" },
     { name: "Wireless Bluetooth Earbuds", price: 2500, icon: "fa-headphones" },
     { name: "Carbon Fiber Badminton Racket", price: 2800, icon: "fa-table-tennis-paddle-ball" },
     { name: "Specialty Coffee Machine", price: 3000, icon: "fa-mug-hot" },
     
-    // Mid / Lifestyle Tier
     { name: "Acoustic Guitar", price: 8500, icon: "fa-guitar" },
     { name: "Fitness Smartwatch", price: 12000, icon: "fa-stopwatch" },
     { name: "Retro Handheld Gaming Console", price: 15000, icon: "fa-gamepad" },
     { name: "Ergonomic Mesh Office Chair", price: 18000, icon: "fa-chair" },
     { name: "Vlog Action Camera", price: 24000, icon: "fa-camera" },
 
-    // High / Tech & Experience Tier
     { name: "Premium Mountain Bike", price: 38000, icon: "fa-bicycle" },
     { name: "Next-Gen Smartphone", price: 42000, icon: "fa-mobile-screen-button" },
     { name: "Cox's Bazar & Saint Martin Resort Trip", price: 45000, icon: "fa-umbrella-beach" },
     { name: "High-Performance Student Laptop", price: 65000, icon: "fa-laptop" },
     { name: "PS5 Gaming Console", price: 68000, icon: "fa-gamepad" },
 
-    // Ultra / Major Goal Tier
     { name: "MacBook Pro / Pro Gaming Rig", price: 165000, icon: "fa-desktop" },
     { name: "International Vacation to Thailand/Dubai", price: 180000, icon: "fa-plane-departure" },
     { name: "Electric Commuter Motorcycle", price: 220000, icon: "fa-motorcycle" },
@@ -176,16 +164,13 @@ const FuturePredictorAPI = {
   }
 };
 
-/* ==========================================================================
-   PART 2: MOOD & VIBE CORRELATION (INTERNAL JS API)
-   ========================================================================== */
 const MoodAnalyticsAPI = {
   moodMultipliers: {
-    Stressed: 1.42, // +42% emotional impulse spending
-    Angry: 1.35,    // +35% reactive spending
-    Bored: 1.25,    // +25% boredom spending
-    Happy: 1.10,    // +10% reward spending
-    Neutral: 1.00   // Baseline
+    Stressed: 1.42,
+    Angry: 1.35,
+    Bored: 1.25,
+    Happy: 1.10,
+    Neutral: 1.00
   },
 
   analyzeCorrelation(grandTotal, mood) {
@@ -218,9 +203,6 @@ const MoodAnalyticsAPI = {
   }
 };
 
-/* ==========================================================================
-   PART 3: DAILY ALLOWANCE & LIVE BUDGET GAUGE ENGINE
-   ========================================================================== */
 function updateBudgetProgressBar(totalSpent) {
   const allowanceVal = parseFloat(allowanceInput.value) || 0;
 
@@ -247,7 +229,6 @@ function updateBudgetProgressBar(totalSpent) {
   if (rawPct >= 100) stateClass = "overspent";
   else if (rawPct > 75) stateClass = "warning";
 
-  // Update Step 1 Gauge
   if (step1Wrapper && step1Fill) {
     step1Wrapper.classList.remove("hidden");
     step1Fill.style.width = `${capPct}%`;
@@ -256,7 +237,6 @@ function updateBudgetProgressBar(totalSpent) {
     if (step1Pct) step1Pct.textContent = `${rawPct}%`;
   }
 
-  // Update Step 3 Gauge
   if (step3Wrapper && step3Fill) {
     step3Wrapper.classList.remove("hidden");
     step3Fill.style.width = `${capPct}%`;
@@ -269,7 +249,6 @@ function updateBudgetProgressBar(totalSpent) {
 function calculateAllowanceStatus(grandTotal) {
   const allowanceVal = parseFloat(allowanceInput.value) || 0;
 
-  // Update Progress Bars
   updateBudgetProgressBar(grandTotal);
 
   if (allowanceVal <= 0 || !allowanceStatusDisplay) {
@@ -298,7 +277,6 @@ function calculateAllowanceStatus(grandTotal) {
   }
 }
 
-// Live Budget Input Listener
 if (allowanceInput) {
   allowanceInput.addEventListener("input", () => {
     let currentSum = 0;
@@ -309,10 +287,6 @@ if (allowanceInput) {
   });
 }
 
-/* ==========================================================================
-   EXPENSE FORM & WORKFLOW EVENT LISTENERS
-   ========================================================================== */
-// Initial Row Event Binding
 const initialRow = expenseList ? expenseList.querySelector(".expense-row") : null;
 if (initialRow) {
   const initialAmtInput = initialRow.querySelector(".expense-amount");
@@ -369,7 +343,6 @@ addBtn.addEventListener("click", () => {
     </div>
   `;
 
-  // Bind live input update for budget progress bar
   const amtInput = newRow.querySelector(".expense-amount");
   if (amtInput) {
     amtInput.addEventListener("input", () => {
@@ -474,7 +447,6 @@ function renderChart(type) {
   });
 }
 
-// STEP 1 SUBMIT: CALCULATE EXPENSES & ADVANCE TO MOOD CHECK
 expenseForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -500,11 +472,9 @@ expenseForm.addEventListener("submit", (e) => {
 
   currentGrandTotal = grandTotal;
 
-  // Advance to Step 2: Mood Tagging
   switchStep(2);
 });
 
-// STEP 2 MOOD SELECTION
 const moodBadges = document.querySelectorAll(".mood-badge");
 moodBadges.forEach(badge => {
   badge.addEventListener("click", () => {
@@ -516,7 +486,6 @@ moodBadges.forEach(badge => {
 
 backToStep1Btn.addEventListener("click", () => switchStep(1));
 
-// STEP 2 -> STEP 3 TRANSITION: RENDER INSIGHTS & CHARTS
 goToStep3Btn.addEventListener("click", () => {
   const { highestCategories, maxAmount } = getHighestCategory(currentCategoryTotals);
 
@@ -532,43 +501,34 @@ goToStep3Btn.addEventListener("click", () => {
     }
   }
 
-  // Calculate Allowance Status
   calculateAllowanceStatus(currentGrandTotal);
 
-  // Render Future Simulator Report
   if (futureSimulatorCard && futureSimulatorContent) {
     futureSimulatorContent.innerHTML = FuturePredictorAPI.generateSimulationReport(currentCategoryTotals, currentGrandTotal);
   }
 
-  // Render Mood Analytics Report
   if (moodAnalyticsCard && moodAnalyticsContent) {
     moodAnalyticsContent.innerHTML = MoodAnalyticsAPI.analyzeCorrelation(currentGrandTotal, selectedMood);
   }
 
-  // Render Chart
   renderChart("bar");
 
-  // Advance to Step 3
   switchStep(3);
 });
 
 function resetTracker() {
-  // Clear category totals and totals state
   currentCategoryTotals = {};
   currentGrandTotal = 0;
   selectedMood = "Neutral";
 
-  // Reset form inputs
   if (expenseForm) expenseForm.reset();
   if (allowanceInput) allowanceInput.value = "";
 
-  // Reset allowance status display
   if (allowanceStatusDisplay) {
     allowanceStatusDisplay.classList.add("hidden");
     allowanceStatusDisplay.innerHTML = "";
   }
 
-  // Reset expense list to 1 empty row
   if (expenseList) {
     expenseList.innerHTML = `
       <div class="expense-row">
@@ -595,7 +555,6 @@ function resetTracker() {
       </div>
     `;
 
-    // Re-bind remove listener for initial row
     expenseList.querySelector(".remove-btn").addEventListener("click", (e) => {
       const rows = expenseList.querySelectorAll(".expense-row");
       if (rows.length > 1) {
@@ -609,18 +568,15 @@ function resetTracker() {
     });
   }
 
-  // Reset mood badges active state
   moodBadges.forEach(b => {
     b.classList.toggle("active", b.getAttribute("data-value") === "Neutral");
   });
 
-  // Destroy previous chart
   if (myChart) {
     myChart.destroy();
     myChart = null;
   }
 
-  // Return to step 1
   switchStep(1);
 }
 
@@ -630,4 +586,3 @@ restartBtn.addEventListener("click", () => {
 
 barChartBtn.addEventListener("click", () => renderChart("bar"));
 pieChartBtn.addEventListener("click", () => renderChart("pie"));
-

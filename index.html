@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Expense Tracker</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
@@ -18,7 +17,6 @@
         <h2>Smart Financial & Mindful Spending Dashboard</h2>
       </div>
 
-      <!-- Modern Stepper Navigation Bar -->
       <div class="stepper-bar">
         <div class="step-item active" id="step-tab-1" data-step="1">
           <span class="step-num">1</span>
@@ -36,9 +34,7 @@
         </div>
       </div>
 
-      <!-- STEP 1: EXPENSE & ALLOWANCE INPUT -->
       <div id="step-1-view" class="step-view">
-        <!-- Daily Allowance Card -->
         <div class="card allowance-card">
           <div class="card-header">
             <h3><i class="fa-solid fa-piggy-bank"></i> Daily Allowance Reserved</h3>
@@ -54,7 +50,6 @@
             />
           </div>
 
-          <!-- Step 1 Live Budget Progress Bar -->
           <div id="step1-budget-wrapper" class="budget-progress-container hidden">
             <div class="budget-progress-info">
               <span id="step1-budget-label" class="budget-label">Spent: ৳0 / ৳0</span>
@@ -66,7 +61,6 @@
           </div>
         </div>
 
-        <!-- Expense Form -->
         <form id="expense-form">
           <div class="section-title">
             <h3><i class="fa-solid fa-list-check"></i> Enter Your Expenses</h3>
@@ -104,7 +98,6 @@
         </form>
       </div>
 
-      <!-- STEP 2: MOOD & VIBE CHECK (AFTER CALCULATION) -->
       <div id="step-2-view" class="step-view hidden">
         <div class="card mood-prompt-card">
           <div class="card-header text-center">
@@ -142,14 +135,11 @@
         </div>
       </div>
 
-      <!-- STEP 3: FUTURE SIMULATOR, MOOD ANALYTICS & CHARTS -->
       <div id="step-3-view" class="step-view hidden">
-        <!-- Totals & Allowance Summary Banner -->
         <div class="summary-section">
           <h3 id="total-display">Total Expense: ৳0.00</h3>
           <h3 id="highest-display">Highest Expense: None</h3>
 
-          <!-- Step 3 Budget Gauge -->
           <div id="step3-budget-wrapper" class="budget-progress-container hidden" style="margin-top: 12px;">
             <div class="budget-progress-info">
               <span id="step3-budget-label" class="budget-label">Allowance Consumed</span>
@@ -163,7 +153,6 @@
           <div id="allowance-status-display" class="allowance-status hidden"></div>
         </div>
 
-        <!-- Future-You Simulator Card -->
         <div id="future-simulator-card" class="card simulator-card">
           <div class="card-header">
             <h3><i class="fa-solid fa-crystal-ball"></i> Future-You Simulator</h3>
@@ -171,7 +160,6 @@
           <div id="future-simulator-content" class="simulator-body"></div>
         </div>
 
-        <!-- Mood vs Spending Correlation Card -->
         <div id="mood-analytics-card" class="card mood-card">
           <div class="card-header">
             <h3><i class="fa-solid fa-brain"></i> Mood vs. Spending Correlation</h3>
@@ -179,7 +167,6 @@
           <div id="mood-analytics-content" class="mood-body"></div>
         </div>
 
-        <!-- Chart Visualization Section -->
         <div class="chart-section">
           <div class="chart-buttons">
             <button type="button" id="bar-chart-btn"><i class="fa-solid fa-chart-column"></i> Bar Chart</button>

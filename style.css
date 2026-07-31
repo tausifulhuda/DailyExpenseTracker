@@ -28,7 +28,7 @@ body {
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.35);
   width: 100%;
   max-width: 580px;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .header-container {
@@ -59,12 +59,11 @@ h2 {
   display: none !important;
 }
 
-/* Budget Progress Bar & Allowance Gauge */
 .budget-progress-container {
   margin-top: 14px;
   background: rgba(255, 255, 255, 0.7);
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
 }
 
@@ -91,7 +90,7 @@ h2 {
   height: 100%;
   width: 0%;
   border-radius: 6px;
-  transition: width 0.4s ease-in-out, background-color 0.4s ease;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
   background: linear-gradient(90deg, #10b981, #059669);
 }
 
@@ -114,17 +113,15 @@ h2 {
   100% { opacity: 1; }
 }
 
-/* Summary Section */
 .summary-section {
   background: rgba(255, 255, 255, 0.6);
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   text-align: center;
   margin-bottom: 16px;
   border: 1px solid #e2e8f0;
 }
 
-/* Cards & Sections */
 .card {
   background: rgba(255, 255, 255, 0.6);
   border: 1px solid rgba(226, 232, 240, 0.8);
@@ -154,7 +151,6 @@ h2 {
   color: #3b82f6;
 }
 
-/* Future-You Simulator Styling */
 .simulator-card {
   border-left: 4px solid #8b5cf6;
   background: linear-gradient(135deg, rgba(245, 243, 255, 0.8), rgba(255, 255, 255, 0.7));
@@ -225,7 +221,7 @@ h2 {
   gap: 12px;
   background: #ffffff;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px dashed #c084fc;
 }
 
@@ -248,7 +244,6 @@ h2 {
   line-height: 1.35;
 }
 
-/* Expense Form Controls - Modern Horizontal Spaced Layout */
 .section-title h3 {
   font-size: 0.95rem;
   color: #334155;
@@ -297,7 +292,7 @@ h2 {
   border-radius: 12px;
   border: 1.5px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .expense-row:hover {
@@ -316,7 +311,6 @@ h2 {
   align-items: center;
 }
 
-/* Modern Custom Dropdown Styling */
 select.category {
   width: 100%;
   appearance: none;
@@ -331,11 +325,11 @@ select.category {
   font-weight: 600;
   color: #1e293b;
   border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #f8fafc;
   cursor: pointer;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 select.category:hover {
@@ -357,19 +351,15 @@ input[type="number"] {
   font-weight: 600;
   color: #1e293b;
   border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #ffffff;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 input[type="number"]:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-
-input[type="number"] {
-  flex: 1;
 }
 
 select:focus,
@@ -390,17 +380,17 @@ button {
   font-size: 0.9rem;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-1.5px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -436,15 +426,16 @@ button:active {
   background-color: #fef2f2;
   color: #ef4444;
   border: 1px solid #fca5a5;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: bold;
+  transition: all 0.2s ease;
 }
 
 .remove-btn:hover {
   background-color: #fee2e2;
+  transform: scale(1.05);
 }
 
-/* Stepper Navigation Bar */
 .stepper-bar {
   display: flex;
   align-items: center;
@@ -502,13 +493,12 @@ button:active {
   margin: 0 10px;
 }
 
-/* Step Views & Animations */
 .step-view {
-  animation: fadeIn 0.35s ease-in-out;
+  animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -524,7 +514,6 @@ button:active {
   margin-bottom: 16px;
 }
 
-/* Post-Calculation Mood Badge Grid */
 .mood-prompt-card {
   border-top: 4px solid #3b82f6;
   padding: 24px 18px;
@@ -550,12 +539,17 @@ button:active {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .mood-badge .emoji {
   font-size: 1.8rem;
   line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.mood-badge:hover .emoji {
+  transform: scale(1.15);
 }
 
 .mood-badge .label {
@@ -602,7 +596,7 @@ button:active {
 
 .mood-badge.active {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transform: scale(1.04);
+  transform: scale(1.05);
 }
 
 .step-actions {
@@ -634,7 +628,6 @@ button:active {
   background-color: #e2e8f0;
 }
 
-/* Mood Analytics Card Styling */
 .mood-card {
   border-left: 4px solid #3b82f6;
   background: linear-gradient(135deg, rgba(239, 246, 255, 0.8), rgba(255, 255, 255, 0.7));
@@ -643,7 +636,7 @@ button:active {
 .mood-insight-alert {
   background: #ffffff;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #bfdbfe;
   color: #1e3a8a;
   font-size: 0.92rem;
@@ -659,7 +652,6 @@ button:active {
   font-size: 1.2rem;
 }
 
-
 #total-display {
   font-size: 1.15rem;
   font-weight: 700;
@@ -673,7 +665,6 @@ button:active {
   margin-top: 4px;
 }
 
-/* Chart Controls */
 .chart-section {
   margin-top: 16px;
 }
@@ -701,6 +692,6 @@ button:active {
   width: 100%;
   background: #ffffff;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
 }
