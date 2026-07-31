@@ -5,53 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Expense Tracker</title>
     <link rel="stylesheet" href="style.css" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="index.js" defer></script>
   </head>
   <body>
     <div class="main">
-      <h1>DAILY EXPENSE TRACKER</h1>
-      <h2>Enter your expenses:</h2>
+      <div class="header-container">
+        <h1><i class="fa-solid fa-wallet"></i> DAILY EXPENSE TRACKER</h1>
+        <h2>Smart Financial & Mindful Spending Dashboard</h2>
+      </div>
 
-      <form id="expense-form">
-        <div id="expense-list">
-          <div class="expense-row">
-            <select class="category">
-              <option value="None" selected>-- Select Category --</option>
-              <option value="Food">Food</option>
-              <option value="Transportation">Transportation</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Others">Others</option>
-            </select>
+      <!-- Modern Stepper Navigation Bar -->
+      <div class="stepper-bar">
+        <div class="step-item active" id="step-tab-1" data-step="1">
+          <span class="step-num">1</span>
+          <span class="step-label">Expenses</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" id="step-tab-2" data-step="2">
+          <span class="step-num">2</span>
+          <span class="step-label">Mood Vibe</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" id="step-tab-3" data-step="3">
+          <span class="step-num">3</span>
+          <span class="step-label">Future & Charts</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: EXPENSE & ALLOWANCE INPUT -->
+      <div id="step-1-view" class="step-view">
+        <!-- Daily Allowance Card -->
+        <div class="card allowance-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-piggy-bank"></i> Daily Allowance Reserved</h3>
+          </div>
+          <div class="allowance-input-group">
+            <label for="daily-allowance">Reserved Budget (৳):</label>
             <input 
               type="number" 
-              class="expense-amount" 
-              placeholder="Enter amount" 
+              id="daily-allowance" 
+              placeholder="Enter daily budget (e.g. 1000)" 
               min="0" 
-              step="0.01" 
+              step="1" 
             />
           </div>
         </div>
 
-        <br>
-        
-        <button type="button" id="add-btn">+ Add Expense</button>
-        <br><br>
-        <button type="submit" id="submit-btn">Calculate</button>
-      </form>
+        <!-- Expense Form -->
+        <form id="expense-form">
+          <div class="section-title">
+            <h3><i class="fa-solid fa-list-check"></i> Enter Your Expenses</h3>
+          </div>
+          
+          <div id="expense-list">
+            <div class="expense-row">
+              <div class="expense-row-inputs">
+                <select class="category">
+                  <option value="None" selected>-- Select Category --</option>
+                  <option value="Food">Food</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Others">Others</option>
+                </select>
+                <input 
+                  type="number" 
+                  class="expense-amount" 
+                  placeholder="Amount (৳)" 
+                  min="0" 
+                  step="0.01" 
+                />
+                <button type="button" class="remove-btn" title="Remove Expense">✕</button>
+              </div>
+            </div>
+          </div>
 
-      <h3 id="total-display">Total Expense: ৳0.00</h3>
-      <h3 id="highest-display"></h3>
+          <div class="form-actions">
+            <button type="button" id="add-btn"><i class="fa-solid fa-plus"></i> Add Expense</button>
+            <button type="submit" id="submit-btn"><i class="fa-solid fa-calculator"></i> Calculate & Next <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </form>
+      </div>
 
-      <div class="chart-buttons" style="margin-top: 30px; display: flex; gap: 10px;">
-        <button type="button" id="bar-chart-btn"> Generate Bar Chart</button>
-        <button type="button" id="pie-chart-btn"> Generate Pie Chart</button>
+      <!-- STEP 2: MOOD & VIBE CHECK (AFTER CALCULATION) -->
+      <div id="step-2-view" class="step-view hidden">
+        <div class="card mood-prompt-card">
+          <div class="card-header text-center">
+            <h3><i class="fa-solid fa-heart-pulse"></i> How did you feel about today's spending?</h3>
+          </div>
+          <p class="step-desc">Tag your overall emotional state for these expenses to unlock behavioral spending insights.</p>
+          
+          <div class="mood-badge-grid" id="mood-badge-grid">
+            <button type="button" class="mood-badge" data-value="Happy">
+              <span class="emoji">🙂</span>
+              <span class="label">Happy</span>
+            </button>
+            <button type="button" class="mood-badge active" data-value="Neutral">
+              <span class="emoji">😐</span>
+              <span class="label">Neutral</span>
+            </button>
+            <button type="button" class="mood-badge" data-value="Stressed">
+              <span class="emoji">😞</span>
+              <span class="label">Stressed</span>
+            </button>
+            <button type="button" class="mood-badge" data-value="Angry">
+              <span class="emoji">😡</span>
+              <span class="label">Angry</span>
+            </button>
+            <button type="button" class="mood-badge" data-value="Bored">
+              <span class="emoji">😴</span>
+              <span class="label">Bored</span>
+            </button>
+          </div>
+
+          <div class="step-actions">
+            <button type="button" id="back-to-step1-btn" class="secondary-btn"><i class="fa-solid fa-arrow-left"></i> Edit Expenses</button>
+            <button type="button" id="go-to-step3-btn" class="primary-btn">View Future Projections & Charts <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
       </div>
-      <div style="margin-top: 20px; max-height: 300px;">
-        <canvas id="expense-chart"></canvas>
+
+      <!-- STEP 3: FUTURE SIMULATOR, MOOD ANALYTICS & CHARTS -->
+      <div id="step-3-view" class="step-view hidden">
+        <!-- Totals & Allowance Summary Banner -->
+        <div class="summary-section">
+          <h3 id="total-display">Total Expense: ৳0.00</h3>
+          <h3 id="highest-display">Highest Expense: None</h3>
+          <div id="allowance-status-display" class="allowance-status hidden"></div>
+        </div>
+
+        <!-- Future-You Simulator Card -->
+        <div id="future-simulator-card" class="card simulator-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-crystal-ball"></i> Future-You Simulator</h3>
+          </div>
+          <div id="future-simulator-content" class="simulator-body"></div>
+        </div>
+
+        <!-- Mood vs Spending Correlation Card -->
+        <div id="mood-analytics-card" class="card mood-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-brain"></i> Mood vs. Spending Correlation</h3>
+          </div>
+          <div id="mood-analytics-content" class="mood-body"></div>
+        </div>
+
+        <!-- Chart Visualization Section -->
+        <div class="chart-section">
+          <div class="chart-buttons">
+            <button type="button" id="bar-chart-btn"><i class="fa-solid fa-chart-column"></i> Bar Chart</button>
+            <button type="button" id="pie-chart-btn"><i class="fa-solid fa-chart-pie"></i> Pie Chart</button>
+          </div>
+          <div class="chart-container">
+            <canvas id="expense-chart"></canvas>
+          </div>
+        </div>
+
+        <div class="step-actions" style="margin-top: 16px;">
+          <button type="button" id="restart-btn" class="secondary-btn"><i class="fa-solid fa-rotate-left"></i> Start New Calculation</button>
+        </div>
       </div>
+
     </div>
   </body>
-</html>
+</html>

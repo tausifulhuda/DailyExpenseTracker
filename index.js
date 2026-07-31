@@ -3,46 +3,300 @@ const expenseList = document.getElementById("expense-list");
 const expenseForm = document.getElementById("expense-form");
 const totalDisplay = document.getElementById("total-display");
 const highestDisplay = document.getElementById("highest-display");
+const allowanceInput = document.getElementById("daily-allowance");
+const allowanceStatusDisplay = document.getElementById("allowance-status-display");
+
 const barChartBtn = document.getElementById("bar-chart-btn");
 const pieChartBtn = document.getElementById("pie-chart-btn");
 
+const futureSimulatorCard = document.getElementById("future-simulator-card");
+const futureSimulatorContent = document.getElementById("future-simulator-content");
+
+const moodAnalyticsCard = document.getElementById("mood-analytics-card");
+const moodAnalyticsContent = document.getElementById("mood-analytics-content");
+
+// Stepper Elements
+const stepViews = {
+  1: document.getElementById("step-1-view"),
+  2: document.getElementById("step-2-view"),
+  3: document.getElementById("step-3-view")
+};
+
+const stepTabs = {
+  1: document.getElementById("step-tab-1"),
+  2: document.getElementById("step-tab-2"),
+  3: document.getElementById("step-tab-3")
+};
+
+const backToStep1Btn = document.getElementById("back-to-step1-btn");
+const goToStep3Btn = document.getElementById("go-to-step3-btn");
+const restartBtn = document.getElementById("restart-btn");
+
 let myChart = null;
 let currentCategoryTotals = {};
+let currentGrandTotal = 0;
+let selectedMood = "Neutral";
 
 const chartColors = [
   "#FF6384", "#36A2EB", "#FFCE56", 
   "#4BC0C0", "#9966FF", "#FF9F40"
 ];
 
+/* ==========================================================================
+   STEPPER NAVIGATION ENGINE
+   ========================================================================== */
+function switchStep(stepNum) {
+  [1, 2, 3].forEach(num => {
+    if (stepViews[num]) {
+      stepViews[num].classList.toggle("hidden", num !== stepNum);
+    }
+    if (stepTabs[num]) {
+      stepTabs[num].classList.toggle("active", num <= stepNum);
+    }
+  });
+}
+
+// Enable clicking previous step tabs
+Object.keys(stepTabs).forEach(step => {
+  stepTabs[step].addEventListener("click", () => {
+    const targetStep = parseInt(step);
+    if (targetStep === 1 || (targetStep === 2 && currentGrandTotal > 0) || (targetStep === 3 && currentGrandTotal > 0)) {
+      switchStep(targetStep);
+    }
+  });
+});
+
+/* ==========================================================================
+   PART 1: FUTURE-YOU SIMULATOR (INTERNAL JS API)
+   ========================================================================== */
+const FuturePredictorAPI = {
+  catalog: [
+    // Micro / Hobby Tier
+    { name: "Bestselling Book Collection", price: 1200, icon: "fa-book" },
+    { name: "Artist Watercolor & Sketching Set", price: 1800, icon: "fa-palette" },
+    { name: "Wireless Bluetooth Earbuds", price: 2500, icon: "fa-headphones" },
+    { name: "Carbon Fiber Badminton Racket", price: 2800, icon: "fa-table-tennis-paddle-ball" },
+    { name: "Specialty Coffee Machine", price: 3000, icon: "fa-mug-hot" },
+    
+    // Mid / Lifestyle Tier
+    { name: "Acoustic Guitar", price: 8500, icon: "fa-guitar" },
+    { name: "Fitness Smartwatch", price: 12000, icon: "fa-stopwatch" },
+    { name: "Retro Handheld Gaming Console", price: 15000, icon: "fa-gamepad" },
+    { name: "Ergonomic Mesh Office Chair", price: 18000, icon: "fa-chair" },
+    { name: "Vlog Action Camera", price: 24000, icon: "fa-camera" },
+
+    // High / Tech & Experience Tier
+    { name: "Premium Mountain Bike", price: 38000, icon: "fa-bicycle" },
+    { name: "Next-Gen Smartphone", price: 42000, icon: "fa-mobile-screen-button" },
+    { name: "Cox's Bazar & Saint Martin Resort Trip", price: 45000, icon: "fa-umbrella-beach" },
+    { name: "High-Performance Student Laptop", price: 65000, icon: "fa-laptop" },
+    { name: "PS5 Gaming Console", price: 68000, icon: "fa-gamepad" },
+
+    // Ultra / Major Goal Tier
+    { name: "MacBook Pro / Pro Gaming Rig", price: 165000, icon: "fa-desktop" },
+    { name: "International Vacation to Thailand/Dubai", price: 180000, icon: "fa-plane-departure" },
+    { name: "Electric Commuter Motorcycle", price: 220000, icon: "fa-motorcycle" },
+    { name: "Emergency & Wealth Seed Fund", price: 300000, icon: "fa-vault" }
+  ],
+
+  calculateProjections(categoryTotals, grandTotal) {
+    const annualGrandTotal = grandTotal * 365;
+    const fiveYearGrandTotal = annualGrandTotal * 5;
+
+    return {
+      annualGrandTotal,
+      fiveYearGrandTotal
+    };
+  },
+
+  findMilestoneMatches(dailyAmount) {
+    if (!dailyAmount || dailyAmount <= 0) return [];
+    
+    const weeklySaving = dailyAmount;
+    const annualSaving = weeklySaving * 52;
+
+    return this.catalog
+      .map(item => {
+        const monthsNeeded = Math.ceil((item.price / annualSaving) * 12);
+        return { ...item, monthsNeeded };
+      })
+      .filter(item => item.monthsNeeded >= 1 && item.monthsNeeded <= 60)
+      .sort((a, b) => a.monthsNeeded - b.monthsNeeded);
+  },
+
+  generateSimulationReport(categoryTotals, grandTotal) {
+    const { fiveYearGrandTotal } = this.calculateProjections(categoryTotals, grandTotal);
+
+    let topCategory = "Expenses";
+    let topAmount = grandTotal;
+    let maxCatAmt = 0;
+
+    for (const [cat, amt] of Object.entries(categoryTotals)) {
+      if (amt > maxCatAmt) {
+        maxCatAmt = amt;
+        topCategory = cat;
+        topAmount = amt;
+      }
+    }
+
+    const topFiveYear = topAmount * 365 * 5;
+    const matches = this.findMilestoneMatches(topAmount);
+    
+    let milestoneHTML = "";
+    if (matches.length > 0) {
+      const bestMatch = matches[Math.floor(matches.length / 2)] || matches[0];
+      milestoneHTML = `
+        <div class="milestone-box">
+          <div class="milestone-icon"><i class="fa-solid ${bestMatch.icon}"></i></div>
+          <div class="milestone-text">
+            <strong>Habit Swap Milestone:</strong><br/>
+            Skipping your top daily purchase (৳${topAmount.toFixed(2)}) once a week would pay for your next <strong>${bestMatch.name}</strong> (৳${bestMatch.price.toLocaleString()}) in <strong>${bestMatch.monthsNeeded} months</strong>!
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="simulation-headline">
+        <i class="fa-solid fa-hourglass-half"></i>
+        <span>If you continue spending like this for 5 years, you'll spend approximately <strong>৳${topFiveYear.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</strong> on <strong>${topCategory}</strong> alone.</span>
+      </div>
+      <div class="simulation-stats">
+        <div class="sim-stat-pill">
+          <span class="label">1-Year Horizon</span>
+          <span class="val">৳${(grandTotal * 365).toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+        </div>
+        <div class="sim-stat-pill highlight">
+          <span class="label">5-Year Horizon</span>
+          <span class="val">৳${fiveYearGrandTotal.toLocaleString(undefined, {maximumFractionDigits: 0})}</span>
+        </div>
+      </div>
+      ${milestoneHTML}
+    `;
+  }
+};
+
+/* ==========================================================================
+   PART 2: MOOD & VIBE CORRELATION (INTERNAL JS API)
+   ========================================================================== */
+const MoodAnalyticsAPI = {
+  moodMultipliers: {
+    Stressed: 1.42, // +42% emotional impulse spending
+    Angry: 1.35,    // +35% reactive spending
+    Bored: 1.25,    // +25% boredom spending
+    Happy: 1.10,    // +10% reward spending
+    Neutral: 1.00   // Baseline
+  },
+
+  analyzeCorrelation(grandTotal, mood) {
+    const mult = this.moodMultipliers[mood] || 1.00;
+    const diffPct = Math.round((mult - 1.00) * 100);
+
+    let insightText = "";
+    if (diffPct > 0) {
+      insightText = `You tend to spend <strong>${diffPct}% more</strong> when you're <strong>${mood}</strong> compared to neutral days!`;
+    } else {
+      insightText = `Your spending remains balanced and baseline when you feel <strong>${mood}</strong>.`;
+    }
+
+    return `
+      <div class="mood-insight-alert">
+        <i class="fa-solid fa-lightbulb"></i>
+        <span>${insightText}</span>
+      </div>
+      <div class="simulation-stats">
+        <div class="sim-stat-pill">
+          <span class="label">Tagged Mood</span>
+          <span class="val" style="color: #2563eb;">${mood}</span>
+        </div>
+        <div class="sim-stat-pill ${diffPct > 20 ? 'highlight' : ''}">
+          <span class="label">Emotional Multiplier</span>
+          <span class="val">${diffPct > 0 ? '+' + diffPct + '%' : 'Baseline'}</span>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/* ==========================================================================
+   PART 3: DAILY ALLOWANCE CALCULATOR
+   ========================================================================== */
+function calculateAllowanceStatus(grandTotal) {
+  const allowanceVal = parseFloat(allowanceInput.value) || 0;
+  if (allowanceVal <= 0 || !allowanceStatusDisplay) {
+    if (allowanceStatusDisplay) allowanceStatusDisplay.classList.add("hidden");
+    return;
+  }
+
+  allowanceStatusDisplay.classList.remove("hidden");
+
+  const remaining = allowanceVal - grandTotal;
+  if (remaining >= 0) {
+    allowanceStatusDisplay.className = "allowance-status success";
+    allowanceStatusDisplay.innerHTML = `
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 10px; border-radius: 8px; font-weight: 600; margin-top: 10px;">
+        <i class="fa-solid fa-circle-check"></i> Within Budget! Remaining Allowance: <strong>৳${remaining.toFixed(2)}</strong> (Out of ৳${allowanceVal.toFixed(2)})
+      </div>
+    `;
+  } else {
+    const overspent = Math.abs(remaining);
+    allowanceStatusDisplay.className = "allowance-status warning";
+    allowanceStatusDisplay.innerHTML = `
+      <div style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 10px; border-radius: 8px; font-weight: 600; margin-top: 10px;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Overspent Warning! You are over your allowance by <strong>৳${overspent.toFixed(2)}</strong>!
+      </div>
+    `;
+  }
+}
+
+/* ==========================================================================
+   EXPENSE FORM & WORKFLOW EVENT LISTENERS
+   ========================================================================== */
+// Initial Row Remove Event Binding
+const initialRemoveBtn = expenseList ? expenseList.querySelector(".remove-btn") : null;
+if (initialRemoveBtn) {
+  initialRemoveBtn.addEventListener("click", (e) => {
+    const rows = expenseList.querySelectorAll(".expense-row");
+    if (rows.length > 1) {
+      e.target.closest(".expense-row").remove();
+    }
+  });
+}
+
 addBtn.addEventListener("click", () => {
   const newRow = document.createElement("div");
   newRow.className = "expense-row";
   
   newRow.innerHTML = `
-    <select class="category">
-      <option value="None" selected>-- Select Category --</option>
-      <option value="Food">Food</option>
-      <option value="Transportation">Transportation</option>
-      <option value="Entertainment">Entertainment</option>
-      <option value="Shopping">Shopping</option>
-      <option value="Others">Others</option>
-    </select>
-    <input 
-      type="number" 
-      class="expense-amount" 
-      placeholder="Enter amount" 
-      min="0" 
-      step="0.01" 
-    />
-    <button type="button" class="remove-btn">✕</button>
+    <div class="expense-row-inputs">
+      <select class="category">
+        <option value="None" selected>-- Select Category --</option>
+        <option value="Food">Food</option>
+        <option value="Transportation">Transportation</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Others">Others</option>
+      </select>
+      <input 
+        type="number" 
+        class="expense-amount" 
+        placeholder="Amount (৳)" 
+        min="0" 
+        step="0.01" 
+      />
+      <button type="button" class="remove-btn" title="Remove Expense">✕</button>
+    </div>
   `;
 
-  
-  newRow.querySelector(".remove-btn").addEventListener("click", () => {
-    newRow.remove();
+  newRow.querySelector(".remove-btn").addEventListener("click", (e) => {
+    const rows = expenseList.querySelectorAll(".expense-row");
+    if (rows.length > 1) {
+      e.target.closest(".expense-row").remove();
+    }
   });
 
   expenseList.appendChild(newRow);
+  expenseList.scrollLeft = expenseList.scrollWidth;
 });
 
 function getHighestCategory(categoryTotals) {
@@ -73,10 +327,7 @@ function renderChart(type) {
   const labels = Object.keys(currentCategoryTotals);
   const data = Object.values(currentCategoryTotals);
 
-  if (labels.length === 0) {
-    alert("Please calculate totals with valid expenses first!");
-    return;
-  }
+  if (labels.length === 0) return;
 
   const ctx = document.getElementById("expense-chart").getContext("2d");
 
@@ -87,8 +338,8 @@ function renderChart(type) {
   const pluginsList = typeof ChartDataLabels !== 'undefined' ? [ChartDataLabels] : [];
 
   myChart = new Chart(ctx, {
-    type: type, // 'bar' or 'pie'
-    plugins: pluginsList, //
+    type: type,
+    plugins: pluginsList,
     data: {
       labels: labels,
       datasets: [{
@@ -125,6 +376,7 @@ function renderChart(type) {
   });
 }
 
+// STEP 1 SUBMIT: CALCULATE EXPENSES & ADVANCE TO MOOD CHECK
 expenseForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -143,10 +395,35 @@ expenseForm.addEventListener("submit", (e) => {
     }
   });
 
+  if (grandTotal <= 0) {
+    alert("Please enter at least one valid expense category and amount!");
+    return;
+  }
+
+  currentGrandTotal = grandTotal;
+
+  // Advance to Step 2: Mood Tagging
+  switchStep(2);
+});
+
+// STEP 2 MOOD SELECTION
+const moodBadges = document.querySelectorAll(".mood-badge");
+moodBadges.forEach(badge => {
+  badge.addEventListener("click", () => {
+    moodBadges.forEach(b => b.classList.remove("active"));
+    badge.classList.add("active");
+    selectedMood = badge.getAttribute("data-value");
+  });
+});
+
+backToStep1Btn.addEventListener("click", () => switchStep(1));
+
+// STEP 2 -> STEP 3 TRANSITION: RENDER INSIGHTS & CHARTS
+goToStep3Btn.addEventListener("click", () => {
   const { highestCategories, maxAmount } = getHighestCategory(currentCategoryTotals);
 
   if (totalDisplay) {
-    totalDisplay.textContent = `Total Expense: ৳${grandTotal.toFixed(2)}`;
+    totalDisplay.textContent = `Total Expense: ৳${currentGrandTotal.toFixed(2)}`;
   }
 
   if (highestDisplay) {
@@ -157,10 +434,95 @@ expenseForm.addEventListener("submit", (e) => {
     }
   }
 
-  if (grandTotal > 0) {
-    renderChart("bar");
+  // Calculate Allowance Status
+  calculateAllowanceStatus(currentGrandTotal);
+
+  // Render Future Simulator Report
+  if (futureSimulatorCard && futureSimulatorContent) {
+    futureSimulatorContent.innerHTML = FuturePredictorAPI.generateSimulationReport(currentCategoryTotals, currentGrandTotal);
   }
+
+  // Render Mood Analytics Report
+  if (moodAnalyticsCard && moodAnalyticsContent) {
+    moodAnalyticsContent.innerHTML = MoodAnalyticsAPI.analyzeCorrelation(currentGrandTotal, selectedMood);
+  }
+
+  // Render Chart
+  renderChart("bar");
+
+  // Advance to Step 3
+  switchStep(3);
+});
+
+function resetTracker() {
+  // Clear category totals and totals state
+  currentCategoryTotals = {};
+  currentGrandTotal = 0;
+  selectedMood = "Neutral";
+
+  // Reset form inputs
+  if (expenseForm) expenseForm.reset();
+  if (allowanceInput) allowanceInput.value = "";
+
+  // Reset allowance status display
+  if (allowanceStatusDisplay) {
+    allowanceStatusDisplay.classList.add("hidden");
+    allowanceStatusDisplay.innerHTML = "";
+  }
+
+  // Reset expense list to 1 empty row
+  if (expenseList) {
+    expenseList.innerHTML = `
+      <div class="expense-row">
+        <div class="expense-row-inputs">
+          <select class="category">
+            <option value="None" selected>-- Select Category --</option>
+            <option value="Food">Food</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Others">Others</option>
+          </select>
+          <input 
+            type="number" 
+            class="expense-amount" 
+            placeholder="Amount (৳)" 
+            min="0" 
+            step="0.01" 
+          />
+          <button type="button" class="remove-btn" title="Remove Expense">✕</button>
+        </div>
+      </div>
+    `;
+
+    // Re-bind remove listener for initial row
+    expenseList.querySelector(".remove-btn").addEventListener("click", (e) => {
+      const rows = expenseList.querySelectorAll(".expense-row");
+      if (rows.length > 1) {
+        e.target.closest(".expense-row").remove();
+      }
+    });
+  }
+
+  // Reset mood badges active state
+  moodBadges.forEach(b => {
+    b.classList.toggle("active", b.getAttribute("data-value") === "Neutral");
+  });
+
+  // Destroy previous chart
+  if (myChart) {
+    myChart.destroy();
+    myChart = null;
+  }
+
+  // Return to step 1
+  switchStep(1);
+}
+
+restartBtn.addEventListener("click", () => {
+  resetTracker();
 });
 
 barChartBtn.addEventListener("click", () => renderChart("bar"));
 pieChartBtn.addEventListener("click", () => renderChart("pie"));
+
