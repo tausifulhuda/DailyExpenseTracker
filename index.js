@@ -4,7 +4,6 @@ const expenseForm = document.getElementById("expense-form");
 const totalDisplay = document.getElementById("total-display");
 const highestDisplay = document.getElementById("highest-display");
 
-// 1. Function to add a new row when clicking "+ Add Expense"
 addBtn.addEventListener("click", () => {
   const newRow = document.createElement("div");
   newRow.className = "expense-row";
@@ -28,7 +27,7 @@ addBtn.addEventListener("click", () => {
     <button type="button" class="remove-btn">✕</button>
   `;
 
-  // Attach a delete listener to the individual remove button
+  
   newRow.querySelector(".remove-btn").addEventListener("click", () => {
     newRow.remove();
   });
@@ -40,14 +39,12 @@ function getHighestCategory(categoryTotals) {
   let maxAmount = 0;
   let highestCategories = [];
 
-  // Pass 1: Find the maximum spending amount
   for (const amount of Object.values(categoryTotals)) {
     if (amount > maxAmount) {
       maxAmount = amount;
     }
   }
 
-  // Pass 2: Collect all categories that match the maximum amount
   if (maxAmount > 0) {
     for (const [category, amount] of Object.entries(categoryTotals)) {
       if (amount === maxAmount) {
@@ -62,7 +59,6 @@ function getHighestCategory(categoryTotals) {
   };
 }
 
-// 2. Handle Form Submission & Calculate Total
 expenseForm.addEventListener("submit", (e) => {
   e.preventDefault(); // Prevents page reload
 
