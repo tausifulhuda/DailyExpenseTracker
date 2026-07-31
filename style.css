@@ -1,0 +1,161 @@
+/* Base Reset & Layout */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Roboto, -apple-system, sans-serif;
+  background-color: #f4f7f6;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Card Container */
+.main {
+  background: #ffffff;
+  padding: 35px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 480px;
+}
+
+/* Headings */
+h1 {
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  color: #1a252c;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* Expense Rows (Flexbox alignment) */
+.expense-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+/* Form Inputs & Select Dropdowns */
+select,
+input[type="number"] {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border: 1.5px solid #dcdfe6;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select {
+  flex: 1.2;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+input[type="number"] {
+  flex: 1;
+}
+
+select:focus,
+input[type="number"]:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+/* Action Buttons Container */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* Base Button Styling */
+button {
+  width: 100%;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:active {
+  transform: scale(0.99);
+}
+
+/* Specific Button Themes */
+#add-btn {
+  background-color: #eef4ff;
+  color: #2b6cb0;
+  border: 1px dashed #b2d1ff;
+}
+
+#add-btn:hover {
+  background-color: #e2edff;
+}
+
+#submit-btn {
+  background-color: #2b6cb0;
+  color: #ffffff;
+}
+
+#submit-btn:hover {
+  background-color: #2c5282;
+}
+
+/* Remove Row Button (✕) */
+.remove-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background-color: #fff1f0;
+  color: #e53e3e;
+  border: 1px solid #ffa39e;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.remove-btn:hover {
+  background-color: #ffccc7;
+}
+
+/* Total Result Display */
+#total-display {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px dashed #edf2f7;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #2d3748;
+}
+
+#highest-display {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px dashed #edf2f7;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #2d3748;
+}

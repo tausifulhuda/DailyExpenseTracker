@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Expense Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="index.js" defer></script>
+  </head>
+  <body>
+    <div class="main">
+      <h1>DAILY EXPENSE TRACKER</h1>
+      <h2>Enter your expenses:</h2>
+
+      <form id="expense-form">
+        <!-- Container where expense rows will be added -->
+        <div id="expense-list">
+          <div class="expense-row">
+            <select class="category">
+              <option value="None" selected>-- Select Category --</option>
+              <option value="Food">Food</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Others">Others</option>
+            </select>
+            <input 
+              type="number" 
+              class="expense-amount" 
+              placeholder="Enter amount" 
+              min="0" 
+              step="0.01" 
+            />
+          </div>
+        </div>
+
+        <br>
+        <!-- ADD EXPENSE BUTTON HERE -->
+        <button type="button" id="add-btn">+ Add Expense</button>
+        <br><br>
+        <button type="submit" id="submit-btn">Calculate Total</button>
+      </form>
+
+      <h3 id="total-display">Total Expense: ৳0.00</h3>
+      <h3 id="highest-display"></h3>
+    </div>
+  </body>
+</html>
