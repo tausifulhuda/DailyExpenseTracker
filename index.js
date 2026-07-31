@@ -3,6 +3,16 @@ const expenseList = document.getElementById("expense-list");
 const expenseForm = document.getElementById("expense-form");
 const totalDisplay = document.getElementById("total-display");
 const highestDisplay = document.getElementById("highest-display");
+const barChartBtn = document.getElementById("bar-chart-btn");
+const pieChartBtn = document.getElementById("pie-chart-btn");
+
+let myChart = null;
+let currentCategoryTotals = {};
+
+const chartColors = [
+  "#FF6384", "#36A2EB", "#FFCE56", 
+  "#4BC0C0", "#9966FF", "#FF9F40"
+];
 
 addBtn.addEventListener("click", () => {
   const newRow = document.createElement("div");
@@ -54,18 +64,74 @@ function getHighestCategory(categoryTotals) {
   }
 
   return { 
-    highestCategories: highestCategories.join(", "), // Join ties with commas
+    highestCategories: highestCategories.join(", "), 
     maxAmount 
   };
 }
 
+function renderChart(type) {
+  const labels = Object.keys(currentCategoryTotals);
+  const data = Object.values(currentCategoryTotals);
+
+  if (labels.length === 0) {
+    alert("Please calculate totals with valid expenses first!");
+    return;
+  }
+
+  const ctx = document.getElementById("expense-chart").getContext("2d");
+
+  if (myChart) {
+    myChart.destroy();
+  }
+
+  const pluginsList = typeof ChartDataLabels !== 'undefined' ? [ChartDataLabels] : [];
+
+  myChart = new Chart(ctx, {
+    type: type, // 'bar' or 'pie'
+    plugins: pluginsList, //
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Expenses (৳)',
+        data: data,
+        backgroundColor: chartColors.slice(0, labels.length),
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: type === 'pie' 
+        },
+        datalabels: {
+          display: type === 'pie',
+          color: '#ffffff',
+          font: { weight: 'bold', size: 13 },
+          formatter: (value, context) => {
+            const dataset = context.chart.data.datasets[0];
+            const sum = dataset.data.reduce((acc, val) => acc + val, 0);
+            return ((value / sum) * 100).toFixed(1) + "%";
+          }
+        }
+      },
+      scales: type === 'bar' ? {
+        y: {
+          beginAtZero: true
+        }
+      } : {}
+    }
+  });
+}
+
 expenseForm.addEventListener("submit", (e) => {
-  e.preventDefault(); // Prevents page reload
+  e.preventDefault();
 
   let grandTotal = 0;
   const categories = document.querySelectorAll(".category");
   const amounts = document.querySelectorAll(".expense-amount");
-  const categoryTotals = {};
+  currentCategoryTotals = {};
 
   categories.forEach((catSelect, index) => {
     const category = catSelect.value;
@@ -73,13 +139,28 @@ expenseForm.addEventListener("submit", (e) => {
 
     if (category !== "None" && amount > 0) {
       grandTotal += amount;
-      categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+      currentCategoryTotals[category] = (currentCategoryTotals[category] || 0) + amount;
     }
-
   });
-  const { highestCategories, maxAmount } = getHighestCategory(categoryTotals);
-  totalDisplay.textContent = `Total Expense: ৳${grandTotal.toFixed(2)}`;
-  if (grandTotal>0){
-    highestDisplay.textContent= `Highest Expense: ${highestCategories}`;
+
+  const { highestCategories, maxAmount } = getHighestCategory(currentCategoryTotals);
+
+  if (totalDisplay) {
+    totalDisplay.textContent = `Total Expense: ৳${grandTotal.toFixed(2)}`;
+  }
+
+  if (highestDisplay) {
+    if (highestCategories) {
+      highestDisplay.textContent = `Highest Expense: ${highestCategories} (৳${maxAmount.toFixed(2)})`;
+    } else {
+      highestDisplay.textContent = `Highest Expense: None`;
+    }
+  }
+
+  if (grandTotal > 0) {
+    renderChart("bar");
   }
 });
+
+barChartBtn.addEventListener("click", () => renderChart("bar"));
+pieChartBtn.addEventListener("click", () => renderChart("pie"));

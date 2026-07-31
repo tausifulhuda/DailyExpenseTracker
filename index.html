@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Expense Tracker</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="index.js" defer></script>
   </head>
   <body>
@@ -13,7 +15,6 @@
       <h2>Enter your expenses:</h2>
 
       <form id="expense-form">
-        
         <div id="expense-list">
           <div class="expense-row">
             <select class="category">
@@ -43,6 +44,14 @@
 
       <h3 id="total-display">Total Expense: ৳0.00</h3>
       <h3 id="highest-display"></h3>
+
+      <div class="chart-buttons" style="margin-top: 30px; display: flex; gap: 10px;">
+        <button type="button" id="bar-chart-btn"> Generate Bar Chart</button>
+        <button type="button" id="pie-chart-btn"> Generate Pie Chart</button>
+      </div>
+      <div style="margin-top: 20px; max-height: 300px;">
+        <canvas id="expense-chart"></canvas>
+      </div>
     </div>
   </body>
 </html>
