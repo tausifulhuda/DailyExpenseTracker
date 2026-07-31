@@ -53,6 +53,17 @@
               step="1" 
             />
           </div>
+
+          <!-- Step 1 Live Budget Progress Bar -->
+          <div id="step1-budget-wrapper" class="budget-progress-container hidden">
+            <div class="budget-progress-info">
+              <span id="step1-budget-label" class="budget-label">Spent: ৳0 / ৳0</span>
+              <span id="step1-budget-pct" class="budget-pct">0%</span>
+            </div>
+            <div class="budget-progress-bar">
+              <div id="step1-budget-fill" class="budget-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Expense Form -->
@@ -63,7 +74,7 @@
           
           <div id="expense-list">
             <div class="expense-row">
-              <div class="expense-row-inputs">
+              <div class="expense-field">
                 <select class="category">
                   <option value="None" selected>-- Select Category --</option>
                   <option value="Food">Food</option>
@@ -72,6 +83,8 @@
                   <option value="Shopping">Shopping</option>
                   <option value="Others">Others</option>
                 </select>
+              </div>
+              <div class="expense-field row-actions-group">
                 <input 
                   type="number" 
                   class="expense-amount" 
@@ -135,6 +148,18 @@
         <div class="summary-section">
           <h3 id="total-display">Total Expense: ৳0.00</h3>
           <h3 id="highest-display">Highest Expense: None</h3>
+
+          <!-- Step 3 Budget Gauge -->
+          <div id="step3-budget-wrapper" class="budget-progress-container hidden" style="margin-top: 12px;">
+            <div class="budget-progress-info">
+              <span id="step3-budget-label" class="budget-label">Allowance Consumed</span>
+              <span id="step3-budget-pct" class="budget-pct">0%</span>
+            </div>
+            <div class="budget-progress-bar">
+              <div id="step3-budget-fill" class="budget-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
           <div id="allowance-status-display" class="allowance-status hidden"></div>
         </div>
 

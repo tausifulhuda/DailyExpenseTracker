@@ -219,10 +219,59 @@ const MoodAnalyticsAPI = {
 };
 
 /* ==========================================================================
-   PART 3: DAILY ALLOWANCE CALCULATOR
+   PART 3: DAILY ALLOWANCE & LIVE BUDGET GAUGE ENGINE
    ========================================================================== */
+function updateBudgetProgressBar(totalSpent) {
+  const allowanceVal = parseFloat(allowanceInput.value) || 0;
+
+  const step1Wrapper = document.getElementById("step1-budget-wrapper");
+  const step1Label = document.getElementById("step1-budget-label");
+  const step1Pct = document.getElementById("step1-budget-pct");
+  const step1Fill = document.getElementById("step1-budget-fill");
+
+  const step3Wrapper = document.getElementById("step3-budget-wrapper");
+  const step3Label = document.getElementById("step3-budget-label");
+  const step3Pct = document.getElementById("step3-budget-pct");
+  const step3Fill = document.getElementById("step3-budget-fill");
+
+  if (allowanceVal <= 0) {
+    if (step1Wrapper) step1Wrapper.classList.add("hidden");
+    if (step3Wrapper) step3Wrapper.classList.add("hidden");
+    return;
+  }
+
+  const rawPct = Math.round((totalSpent / allowanceVal) * 100);
+  const capPct = Math.min(rawPct, 100);
+
+  let stateClass = "normal";
+  if (rawPct >= 100) stateClass = "overspent";
+  else if (rawPct > 75) stateClass = "warning";
+
+  // Update Step 1 Gauge
+  if (step1Wrapper && step1Fill) {
+    step1Wrapper.classList.remove("hidden");
+    step1Fill.style.width = `${capPct}%`;
+    step1Fill.className = `budget-progress-fill ${stateClass}`;
+    if (step1Label) step1Label.textContent = `Spent: ৳${totalSpent.toFixed(2)} / ৳${allowanceVal.toFixed(2)}`;
+    if (step1Pct) step1Pct.textContent = `${rawPct}%`;
+  }
+
+  // Update Step 3 Gauge
+  if (step3Wrapper && step3Fill) {
+    step3Wrapper.classList.remove("hidden");
+    step3Fill.style.width = `${capPct}%`;
+    step3Fill.className = `budget-progress-fill ${stateClass}`;
+    if (step3Label) step3Label.textContent = `Budget Consumed (৳${totalSpent.toFixed(2)} of ৳${allowanceVal.toFixed(2)})`;
+    if (step3Pct) step3Pct.textContent = `${rawPct}%`;
+  }
+}
+
 function calculateAllowanceStatus(grandTotal) {
   const allowanceVal = parseFloat(allowanceInput.value) || 0;
+
+  // Update Progress Bars
+  updateBudgetProgressBar(grandTotal);
+
   if (allowanceVal <= 0 || !allowanceStatusDisplay) {
     if (allowanceStatusDisplay) allowanceStatusDisplay.classList.add("hidden");
     return;
@@ -249,18 +298,48 @@ function calculateAllowanceStatus(grandTotal) {
   }
 }
 
+// Live Budget Input Listener
+if (allowanceInput) {
+  allowanceInput.addEventListener("input", () => {
+    let currentSum = 0;
+    document.querySelectorAll(".expense-amount").forEach(input => {
+      currentSum += parseFloat(input.value) || 0;
+    });
+    updateBudgetProgressBar(currentSum);
+  });
+}
+
 /* ==========================================================================
    EXPENSE FORM & WORKFLOW EVENT LISTENERS
    ========================================================================== */
-// Initial Row Remove Event Binding
-const initialRemoveBtn = expenseList ? expenseList.querySelector(".remove-btn") : null;
-if (initialRemoveBtn) {
-  initialRemoveBtn.addEventListener("click", (e) => {
-    const rows = expenseList.querySelectorAll(".expense-row");
-    if (rows.length > 1) {
-      e.target.closest(".expense-row").remove();
-    }
-  });
+// Initial Row Event Binding
+const initialRow = expenseList ? expenseList.querySelector(".expense-row") : null;
+if (initialRow) {
+  const initialAmtInput = initialRow.querySelector(".expense-amount");
+  if (initialAmtInput) {
+    initialAmtInput.addEventListener("input", () => {
+      let currentSum = 0;
+      document.querySelectorAll(".expense-amount").forEach(inp => {
+        currentSum += parseFloat(inp.value) || 0;
+      });
+      updateBudgetProgressBar(currentSum);
+    });
+  }
+
+  const initialRemoveBtn = initialRow.querySelector(".remove-btn");
+  if (initialRemoveBtn) {
+    initialRemoveBtn.addEventListener("click", (e) => {
+      const rows = expenseList.querySelectorAll(".expense-row");
+      if (rows.length > 1) {
+        e.target.closest(".expense-row").remove();
+        let currentSum = 0;
+        document.querySelectorAll(".expense-amount").forEach(inp => {
+          currentSum += parseFloat(inp.value) || 0;
+        });
+        updateBudgetProgressBar(currentSum);
+      }
+    });
+  }
 }
 
 addBtn.addEventListener("click", () => {
@@ -268,7 +347,7 @@ addBtn.addEventListener("click", () => {
   newRow.className = "expense-row";
   
   newRow.innerHTML = `
-    <div class="expense-row-inputs">
+    <div class="expense-field">
       <select class="category">
         <option value="None" selected>-- Select Category --</option>
         <option value="Food">Food</option>
@@ -277,6 +356,8 @@ addBtn.addEventListener("click", () => {
         <option value="Shopping">Shopping</option>
         <option value="Others">Others</option>
       </select>
+    </div>
+    <div class="expense-field row-actions-group">
       <input 
         type="number" 
         class="expense-amount" 
@@ -288,10 +369,27 @@ addBtn.addEventListener("click", () => {
     </div>
   `;
 
+  // Bind live input update for budget progress bar
+  const amtInput = newRow.querySelector(".expense-amount");
+  if (amtInput) {
+    amtInput.addEventListener("input", () => {
+      let currentSum = 0;
+      document.querySelectorAll(".expense-amount").forEach(inp => {
+        currentSum += parseFloat(inp.value) || 0;
+      });
+      updateBudgetProgressBar(currentSum);
+    });
+  }
+
   newRow.querySelector(".remove-btn").addEventListener("click", (e) => {
     const rows = expenseList.querySelectorAll(".expense-row");
     if (rows.length > 1) {
       e.target.closest(".expense-row").remove();
+      let currentSum = 0;
+      document.querySelectorAll(".expense-amount").forEach(inp => {
+        currentSum += parseFloat(inp.value) || 0;
+      });
+      updateBudgetProgressBar(currentSum);
     }
   });
 
@@ -474,7 +572,7 @@ function resetTracker() {
   if (expenseList) {
     expenseList.innerHTML = `
       <div class="expense-row">
-        <div class="expense-row-inputs">
+        <div class="expense-field">
           <select class="category">
             <option value="None" selected>-- Select Category --</option>
             <option value="Food">Food</option>
@@ -483,6 +581,8 @@ function resetTracker() {
             <option value="Shopping">Shopping</option>
             <option value="Others">Others</option>
           </select>
+        </div>
+        <div class="expense-field row-actions-group">
           <input 
             type="number" 
             class="expense-amount" 
@@ -500,6 +600,11 @@ function resetTracker() {
       const rows = expenseList.querySelectorAll(".expense-row");
       if (rows.length > 1) {
         e.target.closest(".expense-row").remove();
+        let currentSum = 0;
+        document.querySelectorAll(".expense-amount").forEach(inp => {
+          currentSum += parseFloat(inp.value) || 0;
+        });
+        updateBudgetProgressBar(currentSum);
       }
     });
   }
