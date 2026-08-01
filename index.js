@@ -205,14 +205,18 @@ const MoodAnalyticsAPI = {
 
 function getValidExpenseSum() {
   let currentSum = 0;
-  const rows = document.querySelectorAll(".expense-row");
-  
-  rows.forEach(row => {
-    const category = row.querySelector(".category")?.value;
-    const amount = parseFloat(row.querySelector(".expense-amount")?.value) || 0;
+  if (!expenseList) return currentSum;
 
-    // Only add amount if category is selected and valid
-    if (category && category !== "None" && amount > 0) {
+  const rows = expenseList.querySelectorAll(".expense-row");
+  rows.forEach(row => {
+    const categorySelect = row.querySelector(".category");
+    const amountInput = row.querySelector(".expense-amount");
+
+    const category = categorySelect ? categorySelect.value : "None";
+    const amount = parseFloat(amountInput ? amountInput.value : 0) || 0;
+
+    
+    if (category !== "None" && category !== "" && amount > 0) {
       currentSum += amount;
     }
   });
@@ -296,11 +300,8 @@ function calculateAllowanceStatus(grandTotal) {
 
 if (allowanceInput) {
   allowanceInput.addEventListener("input", () => {
-    let currentSum = 0;
-    document.querySelectorAll(".expense-amount").forEach(input => {
-      currentSum += parseFloat(input.value) || 0;
-    });
-    updateBudgetProgressBar(currentSum);
+    // Uses the function that checks for valid categories first!
+    updateBudgetProgressBar(getValidExpenseSum());
   });
 }
 
