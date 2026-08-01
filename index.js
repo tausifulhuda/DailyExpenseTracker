@@ -305,6 +305,23 @@ if (allowanceInput) {
   });
 }
 
+function handleRemoveAction(targetBtn) {
+  const row = targetBtn.closest(".expense-row");
+  const isFirstRow = row === expenseList.firstElementChild;
+
+  if (isFirstRow) {
+    const categorySelect = row.querySelector(".category");
+    const amountInput = row.querySelector(".expense-amount");
+
+    if (categorySelect) categorySelect.value = "None";
+    if (amountInput) amountInput.value = "";
+  } else {
+    row.remove();
+  }
+
+  updateBudgetProgressBar(getValidExpenseSum());
+}
+
 if (expenseList) {
   expenseList.addEventListener("input", (e) => {
     if (e.target.classList.contains("expense-amount") || e.target.classList.contains("category")) {
@@ -317,35 +334,12 @@ if (expenseList) {
       updateBudgetProgressBar(getValidExpenseSum());
     }
   });
-}
 
-const initialRow = expenseList ? expenseList.querySelector(".expense-row") : null;
-if (initialRow) {
-  const initialAmtInput = initialRow.querySelector(".expense-amount");
-  if (initialAmtInput) {
-    initialAmtInput.addEventListener("input", () => {
-      let currentSum = 0;
-      document.querySelectorAll(".expense-amount").forEach(inp => {
-        currentSum += parseFloat(inp.value) || 0;
-      });
-      updateBudgetProgressBar(currentSum);
-    });
-  }
-
-  const initialRemoveBtn = initialRow.querySelector(".remove-btn");
-  if (initialRemoveBtn) {
-    initialRemoveBtn.addEventListener("click", (e) => {
-      const rows = expenseList.querySelectorAll(".expense-row");
-      if (rows.length > 1) {
-        e.target.closest(".expense-row").remove();
-        let currentSum = 0;
-        document.querySelectorAll(".expense-amount").forEach(inp => {
-          currentSum += parseFloat(inp.value) || 0;
-        });
-        updateBudgetProgressBar(currentSum);
-      }
-    });
-  }
+  expenseList.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-btn")) {
+      handleRemoveAction(e.target);
+    }
+  });
 }
 
 addBtn.addEventListener("click", () => {
@@ -374,29 +368,6 @@ addBtn.addEventListener("click", () => {
       <button type="button" class="remove-btn" title="Remove Expense">✕</button>
     </div>
   `;
-
-  const amtInput = newRow.querySelector(".expense-amount");
-  if (amtInput) {
-    amtInput.addEventListener("input", () => {
-      let currentSum = 0;
-      document.querySelectorAll(".expense-amount").forEach(inp => {
-        currentSum += parseFloat(inp.value) || 0;
-      });
-      updateBudgetProgressBar(currentSum);
-    });
-  }
-
-  newRow.querySelector(".remove-btn").addEventListener("click", (e) => {
-    const rows = expenseList.querySelectorAll(".expense-row");
-    if (rows.length > 1) {
-      e.target.closest(".expense-row").remove();
-      let currentSum = 0;
-      document.querySelectorAll(".expense-amount").forEach(inp => {
-        currentSum += parseFloat(inp.value) || 0;
-      });
-      updateBudgetProgressBar(currentSum);
-    }
-  });
 
   expenseList.appendChild(newRow);
   expenseList.scrollLeft = expenseList.scrollWidth;
@@ -593,14 +564,6 @@ function resetTracker() {
         currentSum += parseFloat(inp.value) || 0;
       });
       updateBudgetProgressBar(currentSum);
-    });
-
-    expenseList.querySelector(".remove-btn").addEventListener("click", (e) => {
-      const rows = expenseList.querySelectorAll(".expense-row");
-      if (rows.length > 1) {
-        e.target.closest(".expense-row").remove();
-        updateBudgetProgressBar(getValidExpenseSum());
-      }
     });
   }
 
