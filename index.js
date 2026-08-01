@@ -203,6 +203,23 @@ const MoodAnalyticsAPI = {
   }
 };
 
+function getValidExpenseSum() {
+  let currentSum = 0;
+  const rows = document.querySelectorAll(".expense-row");
+  
+  rows.forEach(row => {
+    const category = row.querySelector(".category")?.value;
+    const amount = parseFloat(row.querySelector(".expense-amount")?.value) || 0;
+
+    // Only add amount if category is selected and valid
+    if (category && category !== "None" && amount > 0) {
+      currentSum += amount;
+    }
+  });
+
+  return currentSum;
+}
+
 function updateBudgetProgressBar(totalSpent) {
   const allowanceVal = parseFloat(allowanceInput.value) || 0;
 
@@ -284,6 +301,20 @@ if (allowanceInput) {
       currentSum += parseFloat(input.value) || 0;
     });
     updateBudgetProgressBar(currentSum);
+  });
+}
+
+if (expenseList) {
+  expenseList.addEventListener("input", (e) => {
+    if (e.target.classList.contains("expense-amount") || e.target.classList.contains("category")) {
+      updateBudgetProgressBar(getValidExpenseSum());
+    }
+  });
+
+  expenseList.addEventListener("change", (e) => {
+    if (e.target.classList.contains("category")) {
+      updateBudgetProgressBar(getValidExpenseSum());
+    }
   });
 }
 
@@ -523,12 +554,12 @@ function resetTracker() {
 
   if (expenseForm) expenseForm.reset();
   if (allowanceInput) allowanceInput.value = "";
-
+  updateBudgetProgressBar(currentGrandTotal)
   if (allowanceStatusDisplay) {
     allowanceStatusDisplay.classList.add("hidden");
     allowanceStatusDisplay.innerHTML = "";
   }
-
+  
   if (expenseList) {
     expenseList.innerHTML = `
       <div class="expense-row">
@@ -555,15 +586,19 @@ function resetTracker() {
       </div>
     `;
 
+    expenseList.querySelector(".expense-amount").addEventListener("input", () => {
+      let currentSum = 0;
+      document.querySelectorAll(".expense-amount").forEach(inp => {
+        currentSum += parseFloat(inp.value) || 0;
+      });
+      updateBudgetProgressBar(currentSum);
+    });
+
     expenseList.querySelector(".remove-btn").addEventListener("click", (e) => {
       const rows = expenseList.querySelectorAll(".expense-row");
       if (rows.length > 1) {
         e.target.closest(".expense-row").remove();
-        let currentSum = 0;
-        document.querySelectorAll(".expense-amount").forEach(inp => {
-          currentSum += parseFloat(inp.value) || 0;
-        });
-        updateBudgetProgressBar(currentSum);
+        updateBudgetProgressBar(getValidExpenseSum());
       }
     });
   }
