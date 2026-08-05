@@ -702,3 +702,27 @@ button:active {
   margin-bottom: 12px;
   margin-top: 14px; /* Change this value to adjust vertical spacing */
 }
+
+/* Saving Tip Card */
+
+.saving-tip-card{
+
+    margin-bottom:20px;
+
+    text-align:center;
+
+}
+
+#saving-tip{
+
+    font-size:15px;
+
+    line-height:1.6;
+
+    color:#374151;
+
+    margin-top:10px;
+
+    min-height:50px;
+
+}

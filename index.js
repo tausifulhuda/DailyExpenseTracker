@@ -9,6 +9,9 @@ const allowanceStatusDisplay = document.getElementById("allowance-status-display
 const barChartBtn = document.getElementById("bar-chart-btn");
 const pieChartBtn = document.getElementById("pie-chart-btn");
 
+const savingTip = document.getElementById("saving-tip");
+const newTipBtn = document.getElementById("new-tip-btn");
+
 const futureSimulatorCard = document.getElementById("future-simulator-card");
 const futureSimulatorContent = document.getElementById("future-simulator-content");
 
@@ -35,6 +38,30 @@ let myChart = null;
 let currentCategoryTotals = {};
 let currentGrandTotal = 0;
 let selectedMood = "Neutral";
+
+const savingTips = [
+
+"Track every expense, even small ones.",
+
+"Cook meals at home instead of eating out.",
+
+"Set a daily spending limit before leaving home.",
+
+"Wait 24 hours before making non-essential purchases.",
+
+"Compare prices before buying anything expensive.",
+
+"Use public transport whenever possible.",
+
+"Carry a reusable water bottle instead of buying drinks.",
+
+"Save at least 10% of your income every month.",
+
+"Avoid impulse shopping during sales.",
+
+"Review your expenses every week to identify unnecessary spending."
+
+];
 
 const chartColors = [
   "#FF6384", "#36A2EB", "#FFCE56", 
@@ -373,6 +400,15 @@ addBtn.addEventListener("click", () => {
   expenseList.scrollLeft = expenseList.scrollWidth;
 });
 
+
+function showRandomTip() {
+
+    const randomIndex = Math.floor(Math.random() * savingTips.length);
+
+    savingTip.textContent = savingTips[randomIndex];
+
+}
+
 function getHighestCategory(categoryTotals) {
   let maxAmount = 0;
   let highestCategories = [];
@@ -585,3 +621,7 @@ restartBtn.addEventListener("click", () => {
 
 barChartBtn.addEventListener("click", () => renderChart("bar"));
 pieChartBtn.addEventListener("click", () => renderChart("pie"));
+
+newTipBtn.addEventListener("click", showRandomTip);
+
+showRandomTip();
