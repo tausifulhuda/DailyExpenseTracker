@@ -738,3 +738,8 @@ button:active {
 #new-tip-btn-span {
   margin-left: auto !important;
 }
+
+#restart-btn{
+  margin-left: auto;
+  margin-right: auto;
+}
